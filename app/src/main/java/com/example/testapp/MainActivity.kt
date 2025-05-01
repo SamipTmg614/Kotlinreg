@@ -1,11 +1,14 @@
 package com.example.testapp
 
+import android.graphics.BitmapFactory
 import android.graphics.ColorSpace.Rgb
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,8 +47,9 @@ import androidx.compose.ui.unit.sp
 import com.example.testapp.ui.theme.TestAppTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-
-
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalInspectionMode
 
 
 class MainActivity : ComponentActivity() {
@@ -71,14 +75,27 @@ fun getMusic(){
 @Composable
 fun mainScreen(innerPadding: PaddingValues){
     val context = LocalContext.current
-    var mediaPlayer = remember { MediaPlayer.create(context,R.raw.song) }
+    val mediaPlayer = remember { MediaPlayer.create(context,R.raw.song) }
     var isPLaying by remember { mutableStateOf(false) }
+
+    val albumArt = loadAlbumArt()
     Column (modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color(red = 65, green = 65,blue = 65)),
         ){
         Row (modifier = Modifier.fillMaxWidth().height(250.dp)){  }
         Row (modifier = Modifier.fillMaxWidth().height(200.dp),
             horizontalArrangement = Arrangement.Center){
-            Box(modifier = Modifier.size(200.dp).background(Color.White))
+            if (albumArt != null){
+                println("there is art")
+                Image(
+                    bitmap = albumArt,
+                    contentDescription = "Album Art",
+                    modifier = Modifier.size(200.dp)
+                )
+            }else{
+                Box(modifier = Modifier.size(200.dp).background(Color.White))
+
+            }
+
         }
         Row (modifier = Modifier.fillMaxWidth().height(60.dp),
             horizontalArrangement = Arrangement.Center,
@@ -138,6 +155,28 @@ fun mainScreen(innerPadding: PaddingValues){
     }
 
 }
+
+
+@Composable
+fun loadAlbumArt(): ImageBitmap? {
+    val isInPreview = LocalInspectionMode.current
+    if (isInPreview) return null // Skip logic during preview
+
+    val context = LocalContext.current
+    val retriever = MediaMetadataRetriever()
+    val fd = context.resources.openRawResourceFd(R.raw.song)
+    retriever.setDataSource(fd.fileDescriptor, fd.startOffset, fd.length)
+
+    val art = retriever.embeddedPicture
+    fd.close()
+    retriever.release()
+
+    return art?.let {
+        BitmapFactory.decodeByteArray(it, 0, it.size)?.asImageBitmap()
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable
