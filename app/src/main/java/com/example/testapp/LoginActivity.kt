@@ -1,7 +1,11 @@
 package com.example.testapp
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -46,6 +50,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -75,11 +80,13 @@ fun body(innerPadding: PaddingValues){
     var password by remember { mutableStateOf("") }
     var passwordiVisibility by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val activity = context as Activity
 
     Column (
         modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(),
+            .fillMaxWidth().padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Image(
@@ -157,7 +164,17 @@ fun body(innerPadding: PaddingValues){
         }
         OutlinedButton(
             onClick = {
+                if (email == "samiptamang5614@gmail.com" && password == "123456") {
+                    val intent = Intent(context, DahboardActivity::class.java)
 
+                    // first parameter key and second is value
+                    intent.putExtra("email", email)
+                    intent.putExtra("password", password)
+                    context.startActivity(intent)
+                    activity.finish()
+                } else {
+                    Toast.makeText(context, "invalid login", Toast.LENGTH_SHORT).show()
+                }
             },
             modifier = Modifier.width(255.dp)
         ) {
@@ -165,7 +182,11 @@ fun body(innerPadding: PaddingValues){
             Text(text = "Login")
 
     }
-        Text(text = "Don't have an account? Signup", modifier = Modifier.clickable{})
+        Text(text = "Don't have an account? Signup", modifier = Modifier.clickable{
+            val intent = Intent(context, signupActivity::class.java)
+            context.startActivity(intent)
+//            activity.finish() to finish the current activity so that the user cannot go back to it while clicking back
+        })
         Spacer(modifier = Modifier.height(30.dp))
         Text(text = "or signup using")
         Row {

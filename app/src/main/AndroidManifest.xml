@@ -16,6 +16,28 @@
         android:theme="@style/Theme.TestApp"
         tools:targetApi="31">
         <activity
+            android:name=".SpalshActivity"
+            android:exported="true"
+            android:label="@string/title_activity_spalsh"
+            android:theme="@style/Theme.TestApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DahboardActivity"
+            android:exported="true"
+            android:label="@string/title_activity_dahboard"
+            android:theme="@style/Theme.TestApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".signupActivity"
             android:exported="false"
             android:label="@string/title_activity_signup"
