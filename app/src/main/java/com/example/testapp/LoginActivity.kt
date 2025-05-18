@@ -3,6 +3,7 @@ package com.example.testapp
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
@@ -82,6 +83,10 @@ fun body(innerPadding: PaddingValues){
     var rememberMe by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = context as Activity
+    val SharedPreferences = context.getSharedPreferences("Users", Context.MODE_PRIVATE)
+    var localemail: String = SharedPreferences.getString("email","").toString()
+    var localpass: String = SharedPreferences.getString("password","").toString()
+
 
     Column (
         modifier = Modifier
@@ -164,7 +169,9 @@ fun body(innerPadding: PaddingValues){
         }
         OutlinedButton(
             onClick = {
-                if (email == "samiptamang5614@gmail.com" && password == "123456") {
+                if (
+                    email == localemail && password == localpass
+                ) {
                     val intent = Intent(context, DahboardActivity::class.java)
 
                     // first parameter key and second is value

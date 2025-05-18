@@ -9,7 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,8 +55,14 @@ import com.example.testapp.ui.theme.TestAppTheme
 import org.intellij.lang.annotations.JdkConstants
 import java.util.Calendar
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.SharedPreferences
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.focusModifier
 
 class signupActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +84,7 @@ fun MainBody(innerPadding: PaddingValues){
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var gender by remember { mutableStateOf("") }
     var terms by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
@@ -103,6 +110,10 @@ fun MainBody(innerPadding: PaddingValues){
 
     var selectedGender by remember { mutableStateOf("Male") }
     val genderOptions = listOf("Male", "Female", "Other")
+
+    val SharedPreferences = context.getSharedPreferences("Users",Context.MODE_PRIVATE)
+    val editor = SharedPreferences.edit()
+
 
     Column (modifier = Modifier.fillMaxSize().padding(innerPadding),horizontalAlignment = Alignment.CenterHorizontally){
         Text(
@@ -156,6 +167,21 @@ fun MainBody(innerPadding: PaddingValues){
             prefix = {
                 Icon(
                     imageVector = Icons.Default.Email,
+                    contentDescription = null
+                )
+            },
+        )
+        OutlinedTextField(
+            value = password,
+            onValueChange = {
+                password = it
+            },
+            modifier = Modifier.width(372.dp),
+            placeholder = {Text("email")},
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            prefix = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
                     contentDescription = null
                 )
             },
@@ -231,6 +257,33 @@ fun MainBody(innerPadding: PaddingValues){
                     )
 
             }
+        }
+        Row (modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center){
+            OutlinedButton(
+                onClick = {
+
+                    val Localemail: String = SharedPreferences.getString("email","").toString()
+                    editor.putString("email",email)
+                    editor.putString("firstname",firstName)
+                    editor.putString("lastname",lastName)
+                    editor.putString("password",password)
+                    editor.apply()
+                    if (email == Localemail){
+                        Toast.makeText(context,"user already exists",Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        val intent = context.packageManager.getLaunchIntentForPackage("com.example.testapp")
+                        context.startActivity(intent)
+                    }
+
+                }
+            ) {
+               Text(text = "register")
+
+            }
+
+
         }
 
     }
